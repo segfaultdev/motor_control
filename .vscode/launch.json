@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "name": "Cortex Debug",
+            "cwd": "${workspaceRoot}",
+            "request": "launch",
+            "executable": "./build/motor_control.elf",
+            "servertype": "openocd",
+            "device": "STM32F446RE",
+            "interface": "swd",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "svdFile": "./STM32F446.svd",
+            // "breakAfterReset": true,
+            "runToEntryPoint": "main",
+            "armToolchainPath": "/usr/bin",
+            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+            "swoConfig": {
+                "enabled": true,
+                "cpuFrequency": 180000000,
+                "swoFrequency": 2000000,
+                "source": "probe",
+                "decoders": [
+                    {
+                        "type": "console",
+                        "label": "ITM",
+                        "port": 0
+                    }
+                ]
+            }
+        }
+    ],
+    "compounds": []
+}

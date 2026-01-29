@@ -35,7 +35,9 @@ void printk(const char *fmt, ...)
     if (len > 0)
     {
         buffer[len] = '\0';
-        HAL_UART_Transmit(&huart2, (uint8_t *)buffer, len, HAL_MAX_DELAY);
+        __HAL_UART_DISABLE_IT(&huart2, UART_IT_RXNE);
+        HAL_UART_Transmit(&huart2, (uint8_t *)buffer, len, 100);
+        __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
     }
 
     xSemaphoreGive(xPrintkMutex);

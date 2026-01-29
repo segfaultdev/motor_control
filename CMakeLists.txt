@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cmake)
 #
 # This file is generated only once,
 # and is not re-generated if converter is called multiple times.
@@ -65,6 +66,10 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${FREERTOS_MEMMANG_SOURCES}
     ${CMAKE_SOURCE_DIR}/Core/Src/printk.c
     ${CMAKE_SOURCE_DIR}/Core/Src/ili9488.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/ui.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/btn.c
+    ${CMAKE_SOURCE_DIR}/Core/Src/my_tasks.c
+
 
 )
 
@@ -98,10 +103,34 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMENT "Generating hex and bin files..."
 )
 
-# Add flash target using st-flash
-add_custom_target(flash
-    COMMAND st-flash --reset write ${CMAKE_PROJECT_NAME}.bin 0x08000000
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    DEPENDS ${CMAKE_PROJECT_NAME}
-    COMMENT "Flashing firmware to STM32F446..."
-)
+# Attempt to find the official STM32CubeProgrammer CLI
+set(CUBE_PROGRAMMER "C:/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin/STM32_Programmer_CLI.exe")
+
+if(CUBE_PROGRAMMER)
+    # If Cube Programmer is found, use it (Works on Win/Linux/Mac)
+    add_custom_target(flash
+        COMMAND ${CUBE_PROGRAMMER} -c port=SWD -w ${CMAKE_PROJECT_NAME}.bin 0x08000000 -v -rst
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        DEPENDS ${CMAKE_PROJECT_NAME}
+        COMMENT "Flashing with STM32CubeProgrammer..."
+    )
+else()
+    # Fallback to st-flash (Open Source) if Cube Programmer isn't found
+    if(CMAKE_HOST_WIN32)
+        # Windows fallback (assuming st-flash is in PATH)
+        add_custom_target(flash
+            COMMAND st-flash --reset write ${CMAKE_PROJECT_NAME}.bin 0x08000000
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS ${CMAKE_PROJECT_NAME}
+            COMMENT "Flashing with st-flash (Windows)..."
+        )
+    else()
+        # Linux/Mac fallback
+        add_custom_target(flash
+            COMMAND st-flash --reset write ${CMAKE_PROJECT_NAME}.bin 0x08000000
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS ${CMAKE_PROJECT_NAME}
+            COMMENT "Flashing with st-flash (Linux)..."
+        )
+    endif()
+endif()

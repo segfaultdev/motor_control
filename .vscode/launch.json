@@ -3,10 +3,10 @@
     "configurations": [
         {
             "type": "cortex-debug",
-            "name": "Cortex Debug",
+            "name": "Cortex Debug (Windows)",
             "cwd": "${workspaceRoot}",
             "request": "launch",
-            "executable": "./build/motor_control.elf",
+            "executable": "./build/Debug/motor_control.elf",
             "servertype": "openocd",
             "device": "STM32F446RE",
             "interface": "swd",
@@ -15,10 +15,16 @@
                 "target/stm32f4x.cfg"
             ],
             "svdFile": "./STM32F446.svd",
-            // "breakAfterReset": true,
             "runToEntryPoint": "main",
-            "armToolchainPath": "/usr/bin",
-            "gdbPath": "/usr/bin/arm-none-eabi-gdb",
+
+            /* UPDATED PATHS BELOW */
+            
+            // Path to the folder containing the executables (bin folder)
+            "armToolchainPath": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.3 rel1/bin",
+
+            // Full path to the GDB executable
+            "gdbPath": "C:/Program Files (x86)/Arm GNU Toolchain arm-none-eabi/14.3 rel1/bin/arm-none-eabi-gdb.exe",
+
             "swoConfig": {
                 "enabled": true,
                 "cpuFrequency": 180000000,
@@ -33,6 +39,5 @@
                 ]
             }
         }
-    ],
-    "compounds": []
+    ]
 }
